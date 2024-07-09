@@ -80,25 +80,25 @@ async function main($container) {
     id: client.id,
   });
 
-  //TODO record
-
+  //record
   if (navigator.mediaDevices.getUserMedia) {
     console.log('mediaDevices Compatible');
     const constraints = { audio: true };
-    let chunks = [];
+    var chunks = [];
     const stream = await navigator.mediaDevices.getUserMedia({ // <1>
       video: false,
       audio: true,
     })
 
     var recState = false;
-    console.log('Stream is : ', stream);
     var mediaRecorder = new MediaRecorder(stream);
-    console.log('mediarecorder created : ', mediaRecorder);
+    //debug
+    // console.log('Stream is : ', stream);
+    // console.log('mediarecorder created : ', mediaRecorder);
 
   } else {
     console.log('media device not compatible');
-  }
+  };
 
   function rec() {
     mediaRecorder.start();
@@ -110,6 +110,25 @@ async function main($container) {
     mediaRecorder.stop();
     console.log(mediaRecorder.state);
     recState = false;
+    const fileReader = new FileReader();
+
+    let recordedBuffer = null;
+    let cropStart, cropEnd;
+    
+    mediaRecorder.addEventListener('dataavailable', e => {
+      if (e.data.size > 0) {
+        fileReader.readAsArrayBuffer(e.data);
+      }
+    });
+
+    fileReader.addEventListener('loadend', async e => {
+      recordedBuffer = await audioContext.decodeAudioData(fileReader.result);
+      console.log(recordedBuffer);
+      cropStart = 0;
+      cropEnd = recordedBuffer.duration;
+      granular.soundBuffer = recordedBuffer;
+      console.log(granular.soundBuffer);
+    });
   };
 
   //from master to ...
@@ -134,20 +153,22 @@ async function main($container) {
   // mute.connect(reverb);
   mute.connect(delay.input);
 
-  // const soundFiles = [
-  //   '/public/assets/river.wav',
-  //   '/public/assets/burn.wav',
-  //   '/public/assets/clang.wav',
-  // ];
+  const soundFiles = [
+    'assets/river.wav',
+    'assets/burn.wav',
+    'assets/clang.wav',
+  ];
 
   // Load the actual buffers
   const loaderAudio = new AudioBufferLoader(audioContext.sampleRate); //evryone at 48000
   // const loaderAudio = new AudioBufferLoader({serverAdress : '127.0.0.1'}); //evryone at 48000
-  // const soundBuffer = await loaderAudio.load(soundFiles);
+  const soundBuffer = await loaderAudio.load(soundFiles);
+  
+
 
   // const loaderAudio = new loadAudioBuffer(audioContext.sampleRate); //evryone at 48000
   // const soundBuffer = await loadAudioBuffer('./assets/river.wav');
-  const soundBuffer = [0, 1, 0];
+  // const soundBuffer = [0, 1, 0];
 
 
   // Name to index for easy manipulation with interface (player.get(string))
@@ -162,8 +183,7 @@ async function main($container) {
   // create our granular synth and connect it to audio destination
   const granular = new GranularSynth(audioContext, soundBuffer);
   // Set a default value so it can read one at init 
-  //granular.soundBuffer = soundBuffer[0]; 
-  granular.soundBuffer = soundBuffer; 
+  granular.soundBuffer = soundBuffer[0]; 
   // Connect it to mute (output) 
   granular.output.connect(mute);
   // granular.energy = energy;

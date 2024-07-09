@@ -6,9 +6,9 @@ class FeedbackDelay {
     this.audioContext = audioContext; 
     // prepare logic for handling configuration options 
     this.options = Object.assign({
-        preGain: 0.7,
-        delayTime: 0.2,
-        feedback: 0.8,
+        preGain: 0.0,
+        delayTime: 0.0,
+        feedback: 0.0,
     }, options); 
 
     this.input = this.audioContext.createGain(); 

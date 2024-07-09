@@ -8,11 +8,13 @@ import { LitElement, html, css } from 'lit';
 import '@ircam/sc-components';
 
 const envelops = ['Sine', 'Gauss', 'Hanning', 'Tri', 'TrapS', 'TrapL','Blackman', 'Expdec', 'Expmod'];
+
 class SwPlayer extends LitElement {
   constructor() {
     super();
     // reference to the `player` state
     this.player = null;
+    
     // stores the `unsubscribe` callback returned by the `state.onUpdate` methos
     // https://soundworks.dev/soundworks/client.SharedState.html#onUpdate
     this._unobserve = null;
@@ -57,6 +59,12 @@ class SwPlayer extends LitElement {
             options="${JSON.stringify(['oscillator', 'buffer'])}"
             @change=${e => this.player.set({ granularType: e.detail.value })}
           ></sc-radio>
+        </div>
+        <div style="padding-bottom: 4px">
+          <sc-text>REC</sc-text>
+          <sc-record
+            @change=${e => this.player.set({isRecording: e.detail.value })}
+          ></sc-record>
         </div>
         <div style="padding-bottom: 4px"> 
           <sc-text>Sound File</sc-text>
@@ -157,37 +165,32 @@ class SwPlayer extends LitElement {
             @input=${e => this.player.set({changeCent: e.detail.value })}
           ></sc-bang>
         </div>
-        <div>
-          <sc-record
-            @change=${e => this.player.set({isRecording: e.detail.value })}
-          ></sc-record>
-        </div>
         <h3>Feedback Delay</h3>
           <div style="padding-bottom: 4px"> 
           <div>
             <sc-text>preGain</sc-text>
             <sc-slider
-            min=${this.player.getSchema('preGain').min} 
-            max=${this.player.getSchema('preGain').max} 
-            value=${this.player.get('preGain')} 
+            min=${this.player.get('preGain').min} 
+            max=${this.player.get('preGain').max} 
+            value=${this.player.get('preGain').default} 
             @input=${e => this.player.set({ preGain: e.detail.value })} 
             ></sc-slider>
           </div>
           <div>
             <sc-text>feedback</sc-text>
             <sc-slider
-            min=${this.player.getSchema('feedback').min} 
-            max=${this.player.getSchema('feedback').max} 
-            value=${this.player.get('feedback')} 
+            min=${this.player.get('feedback').min} 
+            max=${this.player.get('feedback').max} 
+            value=${this.player.get('feedback').default} 
             @input=${e => this.player.set({ feedback: e.detail.value })} 
             ></sc-slider>
           </div>
           <div>
             <sc-text>delayTime</sc-text>
             <sc-slider
-            min=${this.player.getSchema('delayTime').min} 
-            max=${this.player.getSchema('delayTime').max} 
-            value=${this.player.get('delayTime')} 
+            min=${this.player.get('delayTime').min} 
+            max=${this.player.get('delayTime').max} 
+            value=${this.player.get('delayTime').default} 
             @input=${e => this.player.set({ delayTime: e.detail.value })} 
             ></sc-slider>
           </div>
