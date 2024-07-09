@@ -9,12 +9,12 @@ import '@ircam/sc-components';
 
 const envelops = ['Sine', 'Gauss', 'Hanning', 'Tri', 'TrapS', 'TrapL','Blackman', 'Expdec', 'Expmod'];
 
+
 class SwPlayer extends LitElement {
   constructor() {
     super();
     // reference to the `player` state
     this.player = null;
-    
     // stores the `unsubscribe` callback returned by the `state.onUpdate` methos
     // https://soundworks.dev/soundworks/client.SharedState.html#onUpdate
     this._unobserve = null;

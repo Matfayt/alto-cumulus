@@ -68,6 +68,8 @@ async function main($container) {
    * in a background tab will have all its timers (setTimeout, etc.) put in very
    * low priority, messing any scheduled events.
    */
+
+  //window.location.h for url#
   launcher.register(client, { initScreensContainer: $container });
 
   /**
@@ -129,6 +131,7 @@ async function main($container) {
       granular.soundBuffer = recordedBuffer;
       console.log(granular.soundBuffer);
     });
+    return recordedBuffer;
   };
 
   //from master to ...
@@ -177,6 +180,7 @@ async function main($container) {
     'burn' : soundBuffer[1],
     'clang' : soundBuffer[2],
   };
+
 
   // create a new scheduler, in the audioContext timeline
   const scheduler = new Scheduler(() => audioContext.currentTime);
@@ -250,6 +254,7 @@ async function main($container) {
         <p>Master: ${global.get('master')}</p> 
         <p>Mute: ${global.get('mute')}</p> 
         <sw-player .player=${player}></sw-player>
+        <sc-waveform .buffer=${granular.soundBuffer}></sc-waveform>
         <sw-credits .infos="${client.config.app}"></sw-credits>
       </div>
     `, $container);
