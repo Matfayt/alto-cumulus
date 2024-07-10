@@ -119,3 +119,8 @@ EMULATE=10 npm run watch thing
 ## License
 
 [BSD-3-Clause](./LICENSE)
+
+## TODO
+- Display recorded buffer in an sc-waveform
+- Implement GMU controls for negative control values (phase, revert envelop, revert sound)
+- Panning and/or multichannel granulation (with a sc-dots interface ?)
