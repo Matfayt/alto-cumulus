@@ -375,7 +375,7 @@ async function main($container) {
       } 
     }
     renderApp();
-  });
+  }, true);
 
   global.onUpdate(updates => {  
   for (let key in updates) {  
