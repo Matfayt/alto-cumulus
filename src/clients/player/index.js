@@ -113,10 +113,9 @@ async function main($container) {
     console.log(mediaRecorder.state);
     recState = false;
     const fileReader = new FileReader();
-
     let recordedBuffer = null;
     let cropStart, cropEnd;
-    
+
     mediaRecorder.addEventListener('dataavailable', e => {
       if (e.data.size > 0) {
         fileReader.readAsArrayBuffer(e.data);
@@ -125,13 +124,11 @@ async function main($container) {
 
     fileReader.addEventListener('loadend', async e => {
       recordedBuffer = await audioContext.decodeAudioData(fileReader.result);
-      console.log(recordedBuffer);
       cropStart = 0;
       cropEnd = recordedBuffer.duration;
       granular.soundBuffer = recordedBuffer;
-      console.log(granular.soundBuffer);
+      window.displayBuffer = recordedBuffer; // to display in sc-waveform
     });
-    return recordedBuffer;
   };
 
   //from master to ...
@@ -166,21 +163,12 @@ async function main($container) {
   const loaderAudio = new AudioBufferLoader(audioContext.sampleRate); //evryone at 48000
   // const loaderAudio = new AudioBufferLoader({serverAdress : '127.0.0.1'}); //evryone at 48000
   const soundBuffer = await loaderAudio.load(soundFiles);
-  
-
-
-  // const loaderAudio = new loadAudioBuffer(audioContext.sampleRate); //evryone at 48000
-  // const soundBuffer = await loadAudioBuffer('./assets/river.wav');
-  // const soundBuffer = [0, 1, 0];
-
-
   // Name to index for easy manipulation with interface (player.get(string))
   const sounds = {
     'river' : soundBuffer[0],
     'burn' : soundBuffer[1],
     'clang' : soundBuffer[2],
   };
-
 
   // create a new scheduler, in the audioContext timeline
   const scheduler = new Scheduler(() => audioContext.currentTime);
@@ -207,8 +195,8 @@ async function main($container) {
   // const loader = new AudioBufferLoader({ sampleRate: 48000 }); //same sample rate for everyone
   const envBuffers = await loaderAudio.load(envelopeFiles);
   // const envBuffers = [0, 1, 0];
+  // granular.envBuffer = envBuffers;
 
-  granular.envBuffer = envBuffers;
   //Translate to Float32 and manage memory allocation
   const envChannels = envBuffers.map(buffer => {
     const env = new Float32Array(buffer.length);
@@ -239,6 +227,9 @@ async function main($container) {
     'Sine': waveArray,
   };
 
+  const type = player.get('envelopeType');
+  granular.envBuffer = envelops[type];
+
   // Vicentino microtones in cents
   const vicentino = ["0", "76", "117", "193", "269", "310", "386", "462", "503", "620", "696", "772", "813", "889", "965", "1006", "1082", "1158"];
   // Randomly select a cent value from the list
@@ -246,21 +237,19 @@ async function main($container) {
     return vicentino[Math.floor(Math.random() * vicentino.length)];
   }
 
-
   function renderApp() {
     render(html`
       <div class="simple-layout">
         <h2>Global</h2> 
         <p>Master: ${global.get('master')}</p> 
         <p>Mute: ${global.get('mute')}</p> 
-        <sw-player .player=${player}></sw-player>
-        <sc-waveform .buffer=${granular.soundBuffer}></sc-waveform>
+        <sw-player .player=${player} .buffer=${window.displayBuffer}></sw-player>
         <sw-credits .infos="${client.config.app}"></sw-credits>
       </div>
     `, $container);
   }``
 
-  // react to updates triggered from controller 
+  // react to updates triggered from player
   player.onUpdate(updates => {
     for (let key in updates) {
       const value = updates[key];
@@ -385,6 +374,7 @@ async function main($container) {
         }
       } 
     }
+    renderApp();
   });
 
   global.onUpdate(updates => {  

@@ -15,6 +15,7 @@ class SwPlayer extends LitElement {
     super();
     // reference to the `player` state
     this.player = null;
+    this.buffer = null;
     // stores the `unsubscribe` callback returned by the `state.onUpdate` methos
     // https://soundworks.dev/soundworks/client.SharedState.html#onUpdate
     this._unobserve = null;
@@ -73,6 +74,9 @@ class SwPlayer extends LitElement {
             options="${JSON.stringify(['river', 'burn', 'clang'])}"
             @change=${e => this.player.set({ soundFile: e.detail.value })}
           ></sc-select>
+          <sc-waveform
+            .buffer=${this.buffer}
+          ></sc-waveform>
         </div>
         <div style="padding-bottom: 4px"> 
           <sc-text>period</sc-text> 

@@ -113,7 +113,7 @@ export default {
 
   envelopeType: {
     type: 'any',
-    default: 'waveArray',
+    default: 'Gauss',
     nullable: true,
   },
   granularType: {
