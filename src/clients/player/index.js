@@ -92,7 +92,7 @@ async function main($container) {
       audio: true,
     })
 
-    var recState = false;
+    // var recState = false;
     var mediaRecorder = new MediaRecorder(stream);
     //debug
     // console.log('Stream is : ', stream);
@@ -105,16 +105,15 @@ async function main($container) {
   function rec() {
     mediaRecorder.start();
     console.log(mediaRecorder.state);
-    recState = true;
   };
 
   function stopRec() {
     mediaRecorder.stop();
     console.log(mediaRecorder.state);
-    recState = false;
+    // recState = false;
     const fileReader = new FileReader();
     let recordedBuffer = null;
-    let cropStart, cropEnd;
+    // let cropStart, cropEnd;
 
     mediaRecorder.addEventListener('dataavailable', e => {
       if (e.data.size > 0) {
@@ -124,10 +123,10 @@ async function main($container) {
 
     fileReader.addEventListener('loadend', async e => {
       recordedBuffer = await audioContext.decodeAudioData(fileReader.result);
-      cropStart = 0;
-      cropEnd = recordedBuffer.duration;
+      // cropStart = 0;
+      // cropEnd = recordedBuffer.duration;
       granular.soundBuffer = recordedBuffer;
-      window.displayBuffer = recordedBuffer; // to display in sc-waveform
+      // window.displayBuffer = recordedBuffer; // to display in sc-waveform
     });
   };
 
@@ -243,7 +242,7 @@ async function main($container) {
         <h2>Global</h2> 
         <p>Master: ${global.get('master')}</p> 
         <p>Mute: ${global.get('mute')}</p> 
-        <sw-player .player=${player} .buffer=${window.displayBuffer}></sw-player>
+        <sw-player .player=${player} .buffer=${granular.soundBuffer}></sw-player>
         <sw-credits .infos="${client.config.app}"></sw-credits>
       </div>
     `, $container);
@@ -253,7 +252,7 @@ async function main($container) {
   player.onUpdate(updates => {
     for (let key in updates) {
       const value = updates[key];
-      
+
       switch (key) {
         case 'startSynth': {
           if (value === true) {
@@ -350,10 +349,10 @@ async function main($container) {
           break;
         }
         case 'isRecording': {
-          if (recState){
-            stopRec();
-          } else {
+          if (player.get('isRecording') == true){
             rec();
+          } else if (player.get('isRecording') == false){
+            stopRec();
           }
           break;
         }

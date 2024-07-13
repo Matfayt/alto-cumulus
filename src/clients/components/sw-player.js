@@ -76,6 +76,8 @@ class SwPlayer extends LitElement {
           ></sc-select>
           <sc-waveform
             .buffer=${this.buffer}
+            cursor=true
+            cursor-position=${this.player.get('startPosition')}
           ></sc-waveform>
         </div>
         <div style="padding-bottom: 4px"> 
